@@ -29,7 +29,7 @@ data(iris)
 p <- ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width, fill=Species)) +
   geom_boxplot() +
   geom_point(position = position_jitterdodge(), alpha=0.5) +
-  facet_grid(.~cohort, scales="free_x", space="free_x") +
+  facet_grid(.~Sepal.Length, scales="free_x", space="free_x") +
   labs(x="Sepal length", y="Sepal ", fill="Spiecies")
 
 ggplotly(p)
@@ -37,7 +37,7 @@ ggplotly(p)
 
 # Run analysis
 
-model <- lm(Sepal.Length ~ as.factor(species)*Sepal.Width, data = iris)
+model <- lm(Sepal.Length ~ as.factor(Species)*Sepal.Width, data = iris)
 summary(model)
 
 sjPlot::tab_model(model) # another way to call a package

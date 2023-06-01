@@ -1,2 +1,69 @@
-# Tutorial
-# Jessica Archibald
+# Tutorial # 3 MRS-Hackathon --spant
+# Jessica Archibald Toronto 2023
+
+# Basic functionalities:
+# 1) Reading and loading MRS data
+# 2) Visualization of the data
+# 3) Pre-process
+# 4) Fit
+
+
+# load data included in spant
+
+fname <- system.file("extdata", "philips_spar_sdat_WS.SDAT", package = "spant")
+
+# read and save it
+
+mrs_data <- read_mrs(fname)
+
+# plot the spectra
+
+plot(mrs_data, xlim = c(5, 0.5))
+
+# pre-processing
+# Apply a HSVD filter to the residual water region and
+# Align the spectrum to the tNAA resonance at 2.01 ppm:
+
+mrs_proc <- hsvd_filt(mrs_data)
+mrs_proc <- align(mrs_proc, 2.01)
+plot(mrs_proc, xlim = c(5, 0.5))
+
+# Basis simulation  - Note: Ideal Pulse shapes are assumed
+# In the case of sLASER and PRESS, research has shown that using real pulse shapes is beneficial,
+# especially for strongly coupled metabolites (e.g., glutamate), and at longer echo times
+# Ref: Jalnefjord, O., Pettersson, P., Lundholm, L. & Ljungberg, M. Simulated basis sets for
+# semi-LASER: the impact of including shaped RF pulses and magnetic field gradients. Magn. Reson.
+# Mater. Physics, Biol. Med. 34, 545–554 (2021).
+
+basis <- sim_basis_1h_brain_press(mrs_proc)
+print(basis)
+stackplot(basis, xlim = c(4, 0.5), labels = basis$names, y_offset = 5)
+
+# Fit
+
+#Perform ABfit analysis of the processed data (mrs_proc):
+
+fit_res <- fit_mrs(mrs_proc, basis)
+#Plot the fit result:
+
+plot(fit_res)
+
+# Quality metircs
+
+# Unscaled amplitudes, CRLB error estimates and other useful fitting diagnostics,
+ such as SNR, are given in the fit_res results table
+
+#Note that signal names appended with “.sd” are the CRLB estimates for the
+ uncertainty (standard deviation) in the metabolite quantity estimate. e.g. to
+ calculate the percentage s.d. for tNAA:
+
+fit_res$res_tab$tNAA.sd / fit_res$res_tab$tNAA * 100
+#> [1] 0.9327521
+Spectral SNR:
+
+fit_res$res_tab$SNR
+#> [1] 62.79191
+Linewidth of the tNAA resonance in PPM:
+
+fit_res$res_tab$tNAA_lw
+#> [1] 0.0456527
