@@ -1,2 +1,43 @@
-# Tutorial
-# Jessica Archibald
+# Tutorial # 1 MRS-Hackathon
+# Jessica Archibald Toronto 2023
+
+# Basic functionalities:
+# 1) How to install a package
+# 2) How to load in data
+# 3) Basic plot
+# 4) Run a lmer
+
+# Install a package
+
+install.packages("spant", dependencies = TRUE)
+
+# Load libraries
+
+library(spant)
+library(ggplot2)
+library(plotly)
+library(lme4)
+library(tidyverse)
+library(dplyr)
+
+# Load data
+
+data(iris)
+
+# Plot the data
+
+p <- ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width, fill=Species)) +
+  geom_boxplot() +
+  geom_point(position = position_jitterdodge(), alpha=0.5) +
+  facet_grid(.~cohort, scales="free_x", space="free_x") +
+  labs(x="Sepal length", y="Sepal ", fill="Spiecies")
+
+ggplotly(p)
+
+
+# Run analysis
+
+model <- lm(Sepal.Length ~ as.factor(species)*Sepal.Width, data = iris)
+summary(model)
+
+sjPlot::tab_model(model) # another way to call a package

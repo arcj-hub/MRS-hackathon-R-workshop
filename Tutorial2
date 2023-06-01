@@ -1,0 +1,47 @@
+# Tutorial # 2 MRS-Hackathon
+# Jessica Archibald Toronto 2023
+
+# Basic functionalities:
+# 1) Manipulate the data
+# 2) Piping
+# 3) Plotting with manipulations & piping
+
+# Manipulate the data
+# Filtering the data based on the "cohort" variable:
+
+BLOOD_HC=BLOOD %>%
+  filter(cohort=="HC")
+
+BLOOD_LBP=BLOOD %>%
+  filter(cohort=="LBP")
+
+head(BLOOD_HC)
+
+# Selecting specific variables from the data frame:
+selected_vars <- BLOOD %>%
+  select(id, cohort, sex, age, kynurenine, kynurenine.oh, quinolic.acid)
+
+head(selected_vars)
+
+
+# Using pivot_wider to transform data from long to wide format:
+
+wide_data <- BLOOD %>%
+  pivot_wider(names_from = cohort, values_from = NfL_conc)
+
+head(wide_data)
+
+# Using pivot_longer to transform data from wide to long format:
+
+long_data <- BLOOD %>%
+  pivot_longer(cols = starts_with("kynur"), names_to = "catabolite", values_to = "concentration")
+
+head(long_data)
+
+# Use it within plotting
+
+
+ggplot(data = BLOOD %>%
+         filter(sex == "f"), aes(x = age, y = tryptophan, group = id, colour = id)) +
+  geom_line() +
+  geom_point()
