@@ -7,41 +7,50 @@
 # 3) Plotting with manipulations & piping
 
 # Manipulate the data
-# Filtering the data based on the "cohort" variable:
+# Filtering the data based on the "X" variable:
 
-BLOOD_HC=BLOOD %>%
-  filter(cohort=="HC")
+setosa <- iris %>%
+  filter(Species == "setosa")
 
-BLOOD_LBP=BLOOD %>%
-  filter(cohort=="LBP")
-
-head(BLOOD_HC)
+  long_sepals <- iris %>%
+    filter(Sepal.Length > 6)
 
 # Selecting specific variables from the data frame:
-selected_vars <- BLOOD %>%
-  select(id, cohort, sex, age, kynurenine, kynurenine.oh, quinolic.acid)
 
-head(selected_vars)
+selected_data <- iris %>%
+  filter(Petal.Width < 0.3) %>%
+  select(Sepal.Length, Sepal.Width)
+
+head(selected_data)
 
 
 # Using pivot_wider to transform data from long to wide format:
 
-wide_data <- BLOOD %>%
-  pivot_wider(names_from = cohort, values_from = NfL_conc)
-
-head(wide_data)
+iris_wide <- iris %>%
+  pivot_wider(
+    names_from = Species,
+    values_from = c(Sepal.Length, Sepal.Width, Petal.Length, Petal.Width)
+  )
+head(iris_wide)
 
 # Using pivot_longer to transform data from wide to long format:
 
-long_data <- BLOOD %>%
-  pivot_longer(cols = starts_with("kynur"), names_to = "catabolite", values_to = "concentration")
+iris_long <- iris %>%
+  pivot_longer(
+    cols = starts_with("Sepal") | starts_with("Petal"),
+    names_to = "Measurement",
+    values_to = "Value"
+  )
 
-head(long_data)
+head(iris_long)
 
 # Use it within plotting
 
-
-ggplot(data = BLOOD %>%
-         filter(sex == "f"), aes(x = age, y = tryptophan, group = id, colour = id)) +
-  geom_line() +
-  geom_point()
+iris %>%
+  filter(Sepal.Length > 5) %>%
+  ggplot(aes(x = Sepal.Length, y = Sepal.Width, fill = Species)) +
+  geom_boxplot() +
+  geom_point(position = position_jitterdodge(), alpha = 0.5) +
+  facet_grid(. ~ Sepal.Length, scales = "free_x", space = "free_x") +
+  labs(x = "Sepal length", y = "Sepal", fill = "Species") %>%
+  ggplotly()
