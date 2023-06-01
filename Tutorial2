@@ -46,11 +46,13 @@ head(iris_long)
 
 # Use it within plotting
 
-iris %>%
-  filter(Sepal.Length > 5) %>%
+p2<-iris %>%
+  filter(Sepal.Width < 4) %>%
+  filter(Species=="virginica") %>%
   ggplot(aes(x = Sepal.Length, y = Sepal.Width, fill = Species)) +
   geom_boxplot() +
   geom_point(position = position_jitterdodge(), alpha = 0.5) +
   facet_grid(. ~ Sepal.Length, scales = "free_x", space = "free_x") +
-  labs(x = "Sepal length", y = "Sepal", fill = "Species") %>%
-  ggplotly()
+  labs(x = "Sepal length", y = "Sepal", fill = "Species")
+
+ggplotly(p2)
